@@ -72,6 +72,80 @@ If these samples were drawn from populations with the same ranks of values (medi
 
 There is no significant difference in ranks (often you'll see medians) between group 1 and group 2 (statistical summary).
 
-Median scores for group 1 (M = 14) and group 2 (M = 12) did not differ significantly. (Mann Whitney U test: U(df) = 86, p =0.28). 
+Median scores for group 1 (M = 14) and group 2 (M = 12) did not differ significantly. (Mann Whitney U test: U(df) = 86, p = 0.28). 
 
 ***Note M = median*** 
+
+These together - a t-test and a mann whitney u test - talk about mean and median, respectively. They can make a strong argument. Just make sure you use consistent language if you only choose one versus the other (e.g. only talk about means if you are going to use t-test, only talk about median if you are going to use Mann Whitney u test). In other words, stay consistent when you talk about central tendency. 
+
+If you don't know what the outcomes are from an object that is a list:
+?wilcox.test - scroll to value - this will tell you what the pieces of this list are 
+
+mwu#p.value will show you the actual value of that 
+
+## Linear regression 
+
+Simple linear regression (single dependent variable, a single independent variable)
+
+```{r, include = TRUE}
+# include = FALSE means that none of this code will show up in your knitted document
+# Make an exploratory plot of penguin body mass versus flipper length (x-axis)
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point() +
+  geom_smooth(method = "lm") # This is okay for exploring only, but do not just assume a linear relationship makes sense unless you have tested it
+```
+
+Find a linear regression model using ordinary least squares describing the relationship between flipper length and body mass for these penguins. 
+
+3 pieces:
+
+- What type of model?
+- What is the relationship to model (DV ~ IV(s))
+- Where is the data that's used to create this model? 
+
+```{r}
+penguin_lm <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
+# Make sure you tell it what data you are strating from
+```
+
+y = mx +b
+y= B1x + B0 + E
+y = body mass g 
+x = flipper length mm
+Body Mass (g) = 49.7(flipper_length) - 5780.80
+
+Remember, penguin_lm$coefficients tells you to find all the values associated with object. Here, we are looking for coefficient associated with flipper length. 
+penguin_lm$coefficients[2] = pulls out just the flipper_length_mm from the coefficients 
+
+## broom package returns model outputs as tidy data frames 
+
+```{r}
+penguin_lm_tidy <- broom::tidy(penguin_lm)
+
+penguin_lm_tidy
+
+broom::glance(penguin_lm) 
+
+
+# This gives you measures of the terms of coefficients, the actual estimates, the standard erros, test statitic value. You want this because you might want to put these terms in a summary table of key statistics 
+
+# Glance gets you model wide indicators of fit and uncertainty. 
+```
+
+How can I actually include my model equation in a report? 
+
+```{r}
+extract_eq(model = penguin_lm, use_coefs = TRUE)
+
+```
+
+```{r}
+plot(penguin_lm)
+```
+Residiual versus fitted - how far these points exist from what the model would predict. Do these look somewhat evenly spread around the predicted line? Overall, these residuals are somewhat evenly dispersed around predictor line.
+
+QQPlot: residuals are normally distributed 
+
+Residuals versus Leverage: what points have a disproportionate weight on the other pointsin a way that might be concerning. 
+
+**All four graphs plot residuals, which is how you determine whether a linear model is appropriate!**
