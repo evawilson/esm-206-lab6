@@ -2,7 +2,9 @@
 title: "Lab 6"
 author: "Eva Wilson"
 date: "11/1/2021"
-output: html_document
+output: 
+  html_document: 
+    theme: readable
 ---
 
 ```{r setup, include=FALSE}
@@ -13,3 +15,63 @@ library(broom)
 library(equatiomatic)
 ```
 
+## Example of a rank-based test 
+
+We'll make our own samples, using a pseudorandom generator. 
+
+**Explanation:**
+
+- When you tell R to create a sample of integer values, there is a ***huge*** sequence of values that you can start at (e.g. 3, 4, 30, 2, 1, 15, 6, 8) or pull from. 
+
+- Setting the seed allows us to say, if you are pulling from this sequence to get a sample, then I want you to start at 1414. 
+
+- Note: this is just a "random" sample set. 
+
+- Int stands for integers in this range (from 0-20) pick 15 values, replace means when you take the sample then replace it. 
+
+```{r}
+set.seed(1414)
+gp_1 <- sample.int(20, size = 15, replace = TRUE)
+
+set.seed(1424)
+gp_2 <- sample.int(30, size = 15, replace = TRUE)
+```
+
+'Hist' is a function that shortcuts ggplot
+```{r}
+hist(gp_1)
+
+hist(gp_2)
+```
+Try a t-test
+```{r}
+t.test(gp_1, gp_2)
+```
+
+If these samples were drawn from populations with the same mean, the probability of taking two random samples with means at least as different as the sample means we found by random chance (taking into account spread, n) is 19.8%. 
+
+Retain (fail to reject) the null hypothesis. >> There is no significant difference in means between group 1 and group 2. 
+
+Warning: people get weirdly upset if you say "accept" the null. 
+
+Now, let's compare this outcome to a rank-based test. (rank based means these data are independent from each other)
+
+## Mann Whitney U unpaired rank-based test 
+
+(HOW DID YOU GET THIS TITLE TO BE A DIFFERENT COLOR FONT)
+
+```{r}
+mwu <- wilcox.test(gp_1, gp_2)
+
+mwu
+```
+
+Null: These populations have the same RANKS (as opposed to means)
+
+If these samples were drawn from populations with the same ranks of values (medians), the probability of taking two random samples with ranks at least as different as those in our samples is 28%. 
+
+There is no significant difference in ranks (often you'll see medians) between group 1 and group 2 (statistical summary).
+
+Median scores for group 1 (M = 14) and group 2 (M = 12) did not differ significantly. (Mann Whitney U test: U(df) = 86, p =0.28). 
+
+***Note M = median*** 
